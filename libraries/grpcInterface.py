@@ -2,12 +2,18 @@
 
 # Modules
 from pygnmi.client import gNMIclient
+import psycopg2
 
-def gnmiGet(host, port="57400", user="admin", password="admin"):
-    paths = ['openconfig-interfaces:interfaces', 'openconfig-network-instance:network-instances']
-
+def gnmiGet(host, paths, port="57400", user="admin", password="admin" ):
+    paths = [paths]
     with gNMIclient(target=(host, port), username=user,
                     password=password, insecure=True) as gc:
         result = gc.get(path=paths, encoding='json')
-    print(f"{host}: {result}\n\n")
-    return f"{host}: {result}\n\n"
+    return result
+
+
+def gnmiSet(host, path, payload, port=57400, user="admin", password="admin"):
+    with gNMIclient(target=(host, port), username=user,
+                    password=password, insecure=True) as gc:
+        result = gc.set(update=[(path,payload)], encoding='json')
+    return result
